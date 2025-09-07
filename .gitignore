@@ -1,0 +1,8 @@
+.venv
+artifacts/
+research/
+papers/
+diagrams/
+logs/*
+monitoring/*
+__pycache__/*

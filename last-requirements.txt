@@ -1,0 +1,28 @@
+# Machine Learning & AI Frameworks
+datasets
+huggingface_hub>=0.34.3
+huggingface_hub[hf_xet]
+transformers>=4.54.1
+
+# Data Science & Processing
+joblib>=1.5.1
+kagglehub>=0.1.1
+librosa
+pandas>=2.3.0
+
+# Computer Vision & 3D Graphics
+Pillow>=11.1.0
+pyrender
+smplx
+git+https://github.com/facebookresearch/pytorch3d.git
+
+# File Processing & Configuration
+omegaconf
+PyMuPDF>=1.26.3
+PyYAML>=6.0.2
+python-box>=7.3.2
+python-dotenv>=1.1.1
+
+# Utilities & Tools
+ensure>=1.0.4
+tqdm>=4.67.1

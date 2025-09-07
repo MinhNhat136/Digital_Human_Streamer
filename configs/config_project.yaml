@@ -1,0 +1,22 @@
+logs_root: logs/
+models_root: models/
+constants_root: constants/
+project_root: ../../
+
+#---------------------------------#
+config_data: config_data.yaml
+config_rag: config_rag.yaml
+config_llm: config_llm.yaml
+config_audio: config_audio.yaml
+config_a2f: config_a2f.yaml
+config_project: config_project.yaml
+
+#---------------------------------#
+artifacts_collection: artifacts/data_collection/
+artifacts_validation: artifacts/data_validation/
+artifacts_transformation: artifacts/data_transformation/
+artifacts_analysis: artifacts/data_analysis/
+
+#---------------------------------#
+
+#---------------------------------#

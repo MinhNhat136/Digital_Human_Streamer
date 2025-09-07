@@ -1,0 +1,114 @@
+data_collection:
+  root_dir: artifacts/data_collection/
+
+  tarot_sources:
+    - name: "tarot_card_meanings"
+      type: "kaggle"
+      url: "lsind18/tarot-json"
+    
+    - name: "tarot_card_descriptions"
+      type: "huggingface"
+      url: "multimodalart/1920-raider-waite-tarot-public-domain"
+    
+    - name: "three_card_combination_meanings"
+      type: "huggingface"
+      url: "barissglc/tarot"
+
+    - name: "tarot_card_images"
+      type: "local"
+      url: "knowledges/tarot_card_images"
+    
+  collection_params:
+    max_retry: 3
+    timeout: 30
+    rate_limit: 1.0  
+
+#---------------------------------#
+data_transformation:
+  root_dir: artifacts/data_transformation
+  
+  processing_steps:
+    - name: "cleaning"
+      enabled: true
+      params:
+        remove_duplicates: true
+        normalize_text: true
+        standardize_keywords: true
+    
+    - name: "augmentation" 
+      enabled: true
+      params:
+        generate_synonyms: true
+        create_variations: true
+        expand_contexts: true
+        
+    - name: "vectorization"
+      enabled: true
+      params:
+        embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+        dimension: 384
+        
+  processed_dataset: "artifacts/data_transformation/processed_tarot_data.json"
+  embeddings_file: "artifacts/data_transformation/tarot_embeddings.pkl"
+  vocabulary_file: "artifacts/data_transformation/tarot_vocabulary.json"
+
+#---------------------------------#
+data_validation:
+  root_dir: artifacts/data_validation
+  
+  validation_rules:
+    required_fields: ["name", "meaning_upright", "meaning_reversed", "keywords_upright"]
+    card_count_major: 22 
+    card_count_minor: 56 
+    total_cards: 78
+    
+  quality_metrics:
+    completeness_threshold: 0.95
+    consistency_threshold: 0.90
+    accuracy_threshold: 0.85
+    
+  status_file: "artifacts/data_validation/validation_status.txt"
+  quality_report: "artifacts/data_validation/quality_report.json"
+  issues_log: "artifacts/data_validation/data_issues.log"
+
+#---------------------------------#
+data_builder: 
+  root_dir: artifacts/data_builder
+  key_mapping: "name"
+  
+  datas: 
+    first_builder:
+      tarot_card_meanings: ["name", "arcana", "suit", "fortune_telling", "Archetype", "Hebrew Alphabet", "Numerology", "Elemental", "Mythical/Spiritual"]
+      tarot_card_descriptions: ["name", "description"]
+      tarot_card_images: ["name", "img"]
+
+    second_builder:
+      three_card_combination_meanings: ["Card 1", "Card 2", "Card 3", "Reading"]
+
+#---------------------------------#
+data_analysis:
+  root_dir: artifacts/data_analysis
+  
+  analysis_types:
+    statistical:
+      enabled: true
+      metrics: ["mean_length", "keyword_frequency", "sentiment_distribution"]
+      
+    semantic:
+      enabled: true
+      methods: ["clustering", "similarity_analysis", "topic_modeling"]
+      
+    quality:
+      enabled: true
+      checks: ["completeness", "consistency", "accuracy", "coverage"]
+      
+  visualization:
+    generate_plots: true
+    plot_types: ["distribution", "correlation", "network", "wordcloud"]
+    output_format: "png"
+    
+  reports:
+    summary_report: "artifacts/data_analysis/analysis_summary.json"
+    detailed_report: "artifacts/data_analysis/detailed_analysis.html"
+    charts_dir: "artifacts/data_analysis/charts/"
+

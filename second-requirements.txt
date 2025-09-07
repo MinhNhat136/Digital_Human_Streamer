@@ -1,0 +1,4 @@
+# PyTorch ecosystem with CUDA support
+# Use CPU versions if CUDA not available: torchaudio>=2.7.1, torchvision>=0.22.1
+torchaudio>=2.7.1+cu118 --index-url https://download.pytorch.org/whl/cu118
+torchvision>=0.22.1+cu118 --index-url https://download.pytorch.org/whl/cu118
