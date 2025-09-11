@@ -1,0 +1,68 @@
+# TTS Configuration for Digital Human System
+# Cấu hình Text-to-Speech cho hệ thống Digital Human
+
+tts:
+  # Model configuration
+  model_name: "tts_models/multilingual/multi-dataset/xtts_v2"
+  model_path: "models/tts/xtts_v2"
+  
+  # Voice settings - Giọng nữ tiếng Anh dễ thương
+  voice_settings:
+    language: "en"
+    speaker_wav: "assets/speaker_samples/female_cute_voice.wav"  # Reference voice sample
+    speaker_name: "cute_female_english"
+    
+  # Audio quality settings
+  audio_settings:
+    sample_rate: 22050
+    bit_rate: 16
+    channels: 1
+    format: "wav"
+    
+  # Prosody and emotion settings
+  prosody_settings:
+    # Tăng cường ngữ điệu dễ thương
+    speed: 1.0
+    pitch: 1.1  # Cao hơn một chút để tạo cảm giác dễ thương
+    energy: 0.9  # Năng lượng vừa phải
+    emotion: "happy"  # Cảm xúc vui vẻ
+    
+  # Advanced settings
+  advanced_settings:
+    # XTTS v2 specific parameters
+    temperature: 0.75  # Điều chỉnh tính sáng tạo
+    length_penalty: 1.0
+    repetition_penalty: 1.0
+    top_k: 50
+    top_p: 0.85
+    
+    # Voice cloning settings
+    enable_voice_cloning: true
+    reference_audio_duration: 10.0  # seconds
+    reference_audio_quality: "high"
+    
+  # Performance settings
+  performance:
+    use_gpu: true
+    batch_size: 1
+    max_text_length: 500
+    enable_streaming: false  # Có thể bật cho real-time
+    
+  # Output settings
+  output:
+    output_dir: "results/audio"
+    filename_prefix: "tts_output"
+    save_intermediate: true
+    cleanup_temp_files: true
+    
+  # Error handling
+  error_handling:
+    max_retries: 3
+    timeout: 30
+    fallback_voice: "default_female"
+    
+  # Monitoring
+  monitoring:
+    enable_logging: true
+    log_level: "INFO"
+    metrics_enabled: true

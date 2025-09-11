@@ -1,8 +1,68 @@
+# Python
 .venv
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Project folders
 artifacts/
 research/
 papers/
 diagrams/
 logs/*
 monitoring/*
-__pycache__/*
+
+# ACE-main specific ignores
+models/ACE-main/workflows/tokkio/*/scripts/one-click/*/
+models/ACE-main/workflows/tokkio/*/customization-notebooks/
+models/ACE-main/microservices/ace_agent/
+models/ACE-main/tools/
+models/ACE-main/workflows/animation_pipeline/
+
+# Terraform (from ACE)
+**/.terraform/
+**/terraform.tfstate
+**/terraform.tfstate.backup**
+**/.terraform.lock.hcl
+**/ignore.auto.tfvars
+**/tfplan
+**/gcp-credentials/
+
+# Audio/Media files (large files)
+*.wav
+*.mp3
+*.mp4
+*.avi
+*.mov
+examples/audio/*.wav
+examples/audio/*.mp4
+examples/result_*/
+
+# Model files (if large)
+*.pkl
+*.pth
+*.onnx
+*.bin
+models/**/*.pkl
+models/**/*.pth
+models/**/*.bin
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+.env.local
+
+# Logs
+*.log
+logs/
+**logs/

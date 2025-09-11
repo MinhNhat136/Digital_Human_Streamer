@@ -8,6 +8,7 @@ config_data: config_data.yaml
 config_rag: config_rag.yaml
 config_llm: config_llm.yaml
 config_audio: config_audio.yaml
+config_tts: config_tts.yaml
 config_a2f: config_a2f.yaml
 config_project: config_project.yaml
 

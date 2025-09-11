@@ -1,0 +1,60 @@
+# Machine Learning & AI Frameworks
+datasets
+huggingface_hub>=0.34.3
+huggingface_hub[hf_xet]
+transformers>=4.54.1
+
+matplotlib
+
+# Data Science & Processing
+joblib>=1.5.1
+kagglehub>=0.1.1
+librosa
+pandas>=2.3.0
+
+# Text-to-Speech
+TTS>=0.22.0
+soundfile>=0.12.1
+
+# Computer Vision & 3D Graphics
+Pillow>=11.1.0
+pyrender
+smplx
+git+https://github.com/facebookresearch/pytorch3d.git
+
+# File Processing & Configuration
+omegaconf
+PyMuPDF>=1.26.3
+PyYAML>=6.0.2
+python-box>=7.3.2
+python-dotenv>=1.1.1
+
+# Utilities & Tools
+ensure>=1.0.4
+tqdm>=4.67.1
+PyOpenGL
+PyOpenGL_accelerate
+
+grpclib==0.4.7
+googleapis-common-protos==1.70.0
+protobuf==6.32.0
+protobuf-gen==0.0.4
+
+numpy==1.26.4
+scipy==1.13.0
+grpcio==1.74.0
+".\models\audio2face\proto\sample_wheel\nvidia_ace-1.0.0-py3-none-any.whl" 
+
+fastapi
+unicorn
+websockets
+python-multipart
+aiofiles
+asyncio-mqtt
+redis
+aioredis
+pydantic
+typing-extensions
+fastapi[standard]
+
+timecode
