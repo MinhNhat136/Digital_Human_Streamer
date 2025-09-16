@@ -161,6 +161,123 @@ async def read_from_stream(stream, output_dir, name_prefix):
             print(f"Received status message with value: '{status.message}'")
             print(f"Status code: '{status.code}'")
 
+async def read_stream_data_only(stream):
+    # List of blendshapes names
+    bs_names = []    
+    # List of animation key frames
+    animation_key_frames = []
+    # Audio buffer
+    audio_buffer = b''
+    # Audio header
+    audio_header = None
+    # Emotions data
+    emotion_key_frames = {
+        "input": [],
+        "a2e_output": [],
+        "a2f_smoothed_output": []
+    }
+    
+    while True:
+        message = await stream.read()
+        if message == grpc.aio.EOF:
+            # Trả về dữ liệu thay vì lưu file
+            return {
+                "audio_data": {
+                    "header": audio_header,
+                    "buffer": audio_buffer
+                },
+                "animation_data": animation_key_frames,
+                "emotion_data": emotion_key_frames,
+                "blendshape_names": bs_names
+            }
+
+        if message.HasField("animation_data_stream_header"):
+            animation_data_stream_header = message.animation_data_stream_header
+            bs_names = animation_data_stream_header.skel_animation_header.blend_shapes
+            audio_header = animation_data_stream_header.audio_header
+            
+        elif message.HasField("animation_data"):
+            animation_data = message.animation_data
+            parse_emotion_data(animation_data, emotion_key_frames)
+            
+            blendshape_list = animation_data.skel_animation.blend_shape_weights
+            for blendshapes in blendshape_list:
+                bs_values_dict = dict(zip(bs_names, blendshapes.values))
+                time_code = blendshapes.time_code
+                animation_key_frames.append({
+                    "timeCode": time_code,
+                    "blendShapes": bs_values_dict
+                })
+            
+            audio_buffer += animation_data.audio.audio_buffer
+
+async def write_to_stream_with_data(stream, config_path, audio_data, sample_rate):
+    """
+    Phiên bản mới của write_to_stream nhận trực tiếp audio data
+    
+    Args:
+        stream: gRPC stream
+        config_path: Đường dẫn đến file config
+        audio_data: Audio data trực tiếp (numpy array)
+        sample_rate: Tần số lấy mẫu của audio
+    """
+    config = None
+    with open(config_path, "r") as f:
+        config = yaml.safe_load(f)
+
+    audio_stream_header = AudioStream(
+        audio_stream_header=AudioStreamHeader(
+            audio_header=AudioHeader(
+                samples_per_second=sample_rate,  # Sử dụng sample_rate được truyền vào
+                bits_per_sample=BITS_PER_SAMPLE,
+                channel_count=CHANNEL_COUNT,
+                audio_format=AUDIO_FORMAT
+            ),
+            emotion_post_processing_params=EmotionPostProcessingParameters(
+                **config["post_processing_parameters"]
+            ),
+            face_params=FaceParameters(float_params=config["face_parameters"]),
+            blendshape_params=BlendShapeParameters(
+                bs_weight_multipliers=config["blendshape_parameters"]["multipliers"],
+                bs_weight_offsets=config["blendshape_parameters"]["offsets"]
+            )
+        )
+    )
+
+    await stream.write(audio_stream_header)
+
+    # Chia audio thành các chunks
+    for i in range(len(audio_data) // sample_rate + 1):
+        chunk = audio_data[i * sample_rate: i * sample_rate + sample_rate]
+        
+        if i == 0:
+            list_emotion_tc = [
+                EmotionWithTimeCode(
+                    emotion={
+                        **v["emotions"]
+                    },
+                    time_code=v["time_code"]
+                ) for v in config["emotion_with_timecode_list"].values()
+            ]
+            await stream.write(
+                AudioStream(
+                    audio_with_emotion=AudioWithEmotion(
+                        audio_buffer=chunk.astype(numpy.int16).tobytes(),
+                        emotions=list_emotion_tc
+                    )
+                )
+            )
+        else:
+            await stream.write(
+                AudioStream(
+                    audio_with_emotion=AudioWithEmotion(
+                        audio_buffer=chunk.astype(numpy.int16).tobytes()
+                    )
+                )
+            )
+
+    await stream.write(AudioStream(end_of_audio=AudioStream.EndOfAudio()))
+
 async def write_to_stream(stream, config_path, audio_file_path):
     # Read the content of the audio file, extracting sample rate and data.
     samplerate, data = scipy.io.wavfile.read(audio_file_path)
@@ -233,4 +350,4 @@ async def write_to_stream(stream, config_path, audio_file_path):
     # This is necessary to obtain the status code at the end of the generation of
     # blendshapes. This status code tells you about the end of animation data stream.
     await stream.write(AudioStream(end_of_audio=AudioStream.EndOfAudio()))
-    
+

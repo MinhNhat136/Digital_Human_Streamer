@@ -1,0 +1,7 @@
+camn_model: 
+  path: H-Liu1997/camn_audio
+  device: cuda
+  model_type: camn_audio
+  pose_fps: 30
+  seed_frames: 10
+

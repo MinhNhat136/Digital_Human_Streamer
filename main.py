@@ -1,22 +1,26 @@
-from pipeline.template_node_pipeline import TemplateNodePipeline
-from pipeline.asr.audio_to_text_pipeline import AudioToTextPipelineV0
-from logs import logger
+import stages_backbone
+from stages.motion_stage import MotionStage
+from components.visual.camn_motion_generator import CamnMotionGenerator
 
 
-def execute_stage(stage: TemplateNodePipeline):
-    try:
-        logger.info(f">>>>>> stage {stage.stage} started <<<<<<")
-        stage.initiate()
-        logger.info(f">>>>>> stage {stage.stage} completed <<<<<<\n\nx==========x")
-    except Exception as e:
-        logger.exception(e)
-        raise e
+motion_generator = CamnMotionGenerator()
+motion_stage = MotionStage()
 
-asr_pipeline = AudioToTextPipelineV0()
+stage_backbone = stages_backbone.StageBackbone()
+stage_backbone.add_stage(motion_stage)
 
-pipeline = [asr_pipeline]
+is_execute = False
 
+if __name__ == "__main__":
 
+    stage_backbone.initiate_all_stages()
+    stage_backbone.start_all_stages()
+    stage_backbone.execute_all_stages()
 
-for stage in pipeline:
-    execute_stage(stage)
+    while True:
+        stage_backbone.loop_all_stages()
+
+        if is_execute:
+            stage_backbone.execute_all_stages()
+    
+

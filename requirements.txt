@@ -58,3 +58,5 @@ typing-extensions
 fastapi[standard]
 
 timecode
+f5_tts
+openai

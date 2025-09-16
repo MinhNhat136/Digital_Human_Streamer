@@ -1,0 +1,21 @@
+artifacts_root: artifacts
+
+llm_responses: 
+  input_dir: artifacts/client_input
+  output_dir: artifacts/llm_responses
+  config_dir: configs/config_llm.yml
+
+text_to_speech:
+  input_dir: artifacts/llm_responses
+  output_dir: artifacts/text_to_speech
+  config_dir: configs/config_tts.yml
+
+audio_to_face:
+  input_dir: artifacts/text_to_speech
+  output_dir: artifacts/audio_to_face
+  config_dir: configs/config_face
+
+audio_to_gesture:
+  input_dir: artifacts/text_to_speech
+  output_dir: artifacts/audio_to_gesture
+  config_dir: configs/config_gesture.yml
