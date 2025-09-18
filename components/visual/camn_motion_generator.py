@@ -5,6 +5,7 @@ import librosa
 import logging
 import json
 import pandas as pd
+import numpy as np
 
 from entities.entity_audio import AudioData
 from entities.entity_visual import MotionData
@@ -35,10 +36,9 @@ class CamnMotionGenerator(AbstractMotionGenerator):
             logger.error(f"Failed to initialize CAMN model: {e}")
             raise
     
-    def generate_motion(self, input_dir: str, audio_data: AudioData, seed_motion: Optional[MotionData] = None) -> MotionData:
+    def generate_motion(self, audio_data: AudioData, seed_motion: Optional[MotionData] = None) -> MotionData:
         try:
-            audio_path = f"{input_dir}/{audio_data.name}"
-            motion_result = self._inference_model(audio_path, audio_data.sample_rate, seed_motion)
+            motion_result = self._inference_model(audio_data.data, audio_data.sample_rate, seed_motion)
             poses_result = motion_result['poses'].tolist()
             motion_data_name = audio_data.name.split('.')[0]
 
@@ -55,10 +55,9 @@ class CamnMotionGenerator(AbstractMotionGenerator):
         except Exception as e:
             raise e
     
-    def _inference_model(self, audio_path: str, audio_sr: int, seed_motion: Optional[MotionData] = None) -> Dict[str, Any]:
+    def _inference_model(self, audio_data: np.ndarray, audio_sr: int, seed_motion: Optional[MotionData] = None) -> Dict[str, Any]:
         try:
-            audio, _ = librosa.load(audio_path, sr=audio_sr)
-            audio_tensor = torch.from_numpy(audio).to(self.device).unsqueeze(0)
+            audio_tensor = torch.from_numpy(audio_data).to(self.device).unsqueeze(0)
             speaker_id = torch.zeros(1, 1).long().to(self.device)
             
             if seed_motion is not None:

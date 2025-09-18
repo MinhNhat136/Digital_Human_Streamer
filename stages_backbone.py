@@ -7,8 +7,9 @@ class StageBackbone:
     def add_stage(self, stage: TemplateNodeStage):
         self.stages.append(stage)
         
-    def loop_stage(self, stage: TemplateNodeStage):
-        self.stages.loop()
+    def loop_stage(self):
+        for stage in self.stages:
+            stage.loof()
     
     def remove_stage(self, stage: TemplateNodeStage):
         self.stages.remove(stage)

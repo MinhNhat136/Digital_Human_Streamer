@@ -8,7 +8,8 @@ from transformers import AutoProcessor, AutoModel
 from entities.entity_audio import AudioData
 from components.audio.abstract_tts_generator import AbstractTTSGenerator
 from constants.constants_enum import AudioFormat
-
+import soundfile as sf
+import scipy.signal as signal
 logger = logging.getLogger(__name__)
 
 class BarkTTSGenerator(AbstractTTSGenerator):    
@@ -24,15 +25,16 @@ class BarkTTSGenerator(AbstractTTSGenerator):
     
     def _init_model(self) -> None:
         try:
+            torch.backends.cuda.matmul.allow_tf32 = True
+            torch.backends.cudnn.allow_tf32 = True
+            torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = True
+            
             self.processor = AutoProcessor.from_pretrained(self.model_name)
+
             self.model = AutoModel.from_pretrained(
                 self.model_name,
                 dtype=torch.float16
             ).to(self.device).eval()
-            
-            if torch.cuda.is_available():
-                torch.backends.cuda.matmul.allow_tf32 = True
-                torch.backends.cudnn.allow_tf32 = True
             
         except Exception as e:
             logger.error(f"Failed to initialize Bark model: {e}")
@@ -41,7 +43,7 @@ class BarkTTSGenerator(AbstractTTSGenerator):
     def generate_speech(self, inputs) -> AudioData:
         try:
             speech_result = self._inference_model(inputs)
-            
+            speech_result['audio_data'] = self.resample_audio_scipy(speech_result['audio_data'], self.sample_rate, 16000)
             audio_data = AudioData(
                 data=speech_result['audio_data'],
                 format=AudioFormat.WAV,
@@ -70,9 +72,9 @@ class BarkTTSGenerator(AbstractTTSGenerator):
             with torch.inference_mode():
                 speech_values = self.model.generate(
                     **inputs,
-                    do_sample=True,
-                    fine_temperature=0.4,
-                    coarse_temperature=0.8,
+                    use_cache=True,
+                    fine_temperature=0.3,
+                    coarse_temperature=0.6,
                     pad_token_id=self.processor.tokenizer.pad_token_id
                 )
             
@@ -87,6 +89,13 @@ class BarkTTSGenerator(AbstractTTSGenerator):
         except Exception as e:
             logger.error(f"Error in model inference: {e}")
             raise
+    
+    def resample_audio_scipy(self, audio_data: np.ndarray, orig_sr: int = 24000, target_sr: int = 16000) -> np.ndarray:
+        num_samples = int(len(audio_data) * float(target_sr) / orig_sr)
+        
+        resampled_audio = signal.resample(audio_data, num_samples)
+        
+        return resampled_audio
     
     def save_audio(self, audio_data: AudioData, format: str = 'wav', output_dir: Optional[str] = None) -> str:
         try:

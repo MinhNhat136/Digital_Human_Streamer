@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class FaceStage(TemplateNodeStage):
-    def __init__(self, face_generator: AbstractFaceGenerator):
+    def __init__(self, face_generator: AbstractFaceGenerator, output_dir: str = None):
         super().__init__()
         self.face_generator = face_generator
         
@@ -77,8 +77,6 @@ class FaceStage(TemplateNodeStage):
             return
 
         try:
-            print("execute face stage")
-            start_time = time.time()
             audio_data = self._input_audio_deque.popleft()
             
             def run_async():
@@ -88,12 +86,12 @@ class FaceStage(TemplateNodeStage):
                     self.face_generator.generate_face_expression(audio_data)
                 )
             
-            # Submit task và đợi kết quả
             future = self.executor.submit(run_async)
             face_expression = future.result(timeout=30)
-            end_time = time.time()
-            print(f"Face generation time: {end_time - start_time} seconds")
             self._output_face_deque.put(face_expression)
+
+            if self._output_dir:
+                self.face_generator.save_face_expression(face_expression, format='json', output_dir=self._output_dir)
 
         except Exception as e:
             logger.error(f"Error in face generation: {e}")

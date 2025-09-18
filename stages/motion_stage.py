@@ -84,7 +84,7 @@ class MotionStage(TemplateNodeStage):
 
         try:
             audio_data = self._input_audio_deque.popleft()
-            motion_data = self.motion_generator.generate_motion(input_dir=self._input_dir, audio_data=audio_data, seed_motion=self.seed_motion)
+            motion_data = self.motion_generator.generate_motion(audio_data=audio_data, seed_motion=self.seed_motion)
             
             if self._output_dir is not None:
                 self.motion_generator.save_motion_data(motion_data=motion_data, format='csv', output_dir=self._output_dir)
