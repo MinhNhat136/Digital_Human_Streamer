@@ -1,5 +1,3 @@
-import os
-import logging
 import stages_backbone
 from omegaconf import OmegaConf
 import time
@@ -58,12 +56,21 @@ stage_backbone.add_stage(face_stage)
 stage_backbone.add_stage(motion_stage)
 
 
-if __name__ == "__main__":
-    while True:
-        stage_backbone.loop_stage()
-        print("looping")
-        time.sleep(2)
 
-    
+loop_time = 10
+for i in range(loop_time):
+    tts_stage.add_input_text(f"Life is full of challenges and opportunities {i}")
+
+if __name__ == "__main__":
+    current_loop = 0
+    total_consume = 0
+    while current_loop < loop_time:
+        current_loop += 1
+        start_time = time.time()
+        stage_backbone.loop_stage()
+        total_consume += time.time() - start_time
+    print(f"Average consume {total_consume / loop_time:.2f} seconds")
+
+
     
 
