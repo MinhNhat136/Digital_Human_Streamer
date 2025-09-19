@@ -6,7 +6,6 @@ __pycache__/
 *.so
 
 # Project folders
-artifacts/
 research/
 papers/
 diagrams/
