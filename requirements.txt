@@ -6,7 +6,6 @@ huggingface_hub>=0.34.3
 huggingface_hub[hf_xet]
 
 # Data Science & Processing
-numpy>=2.0.0,<2.3.0  
 scipy==1.12.0  
 pandas>=2.3.0
 matplotlib>=3.0.0
@@ -32,7 +31,6 @@ googleapis-common-protos==1.70.0
 protobuf>=5.0.0,<6.0.0  
 protobuf-gen==0.0.4
 grpcio==1.74.0
-".\models\audio2face\proto\sample_wheel\nvidia_ace-1.0.0-py3-none-any.whl"
 
 # API & Web Services
 fastapi[standard]>=0.100.0
@@ -62,3 +60,5 @@ openai>=1.0.0
 # Development Tools
 rich<14.0.0  # Compatibility with streamlit
 click<8.2.0  # Compatibility with typer
+
+vastai-sdk
